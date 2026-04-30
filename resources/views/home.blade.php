@@ -1,166 +1,101 @@
 @extends('layouts.app')
-@section('title', '| 홈')
+@section('title', 'Cat-Log')
 
 @section('content')
-
-{{-- 스토리 --}}
-<div class="stories-bar">
-    <div class="story-item">
-        <div class="story-ring">
-            <div class="story-avatar">+</div>
-        </div>
-        <span class="story-name">내 스토리</span>
-    </div>
-    @foreach([['user1','seen'],['user2',''],['user3','seen'],['user4',''],['user5','']] as $s)
-    <div class="story-item">
-        <div class="story-ring {{ $s[1] }}">
-            <div class="story-avatar" style="font-size:0.75rem;font-weight:600;">{{ strtoupper(substr($s[0],0,2)) }}</div>
-        </div>
-        <span class="story-name">{{ $s[0] }}</span>
-    </div>
-    @endforeach
+<div style="margin-bottom: 24px;">
+    <h2 style="font-size: 1.25rem; font-weight: 700; color: #333;">전체 글</h2>
 </div>
 
-{{-- 피드 --}}
-@forelse($diaries as $diary)
-<div class="post-card">
-    <div class="post-header">
-        <a href="#" class="post-author">
-            <div class="avatar-wrap">
-                <div class="avatar-inner" style="font-size:0.75rem;font-weight:600;">
-                    {{ strtoupper(substr($diary->user->name ?? 'U', 0, 2)) }}
-                </div>
-            </div>
-            <div>
-                <div class="author-name">{{ $diary->user->name ?? '알수없음' }}</div>
-                <div class="post-time">{{ $diary->created_at->diffForHumans() }}</div>
-            </div>
+{{-- 글 카드 목록 --}}
+<div style="display: flex; flex-direction: column; gap: 16px;">
+    @forelse($posts as $post)
+    <article style="background:#fff; border:1px solid #e8e8e8; border-radius:10px; overflow:hidden; display:flex; gap:0;">
+
+        {{-- 대표 이미지 (있을 때만 표시) --}}
+        @if($post->cover_image)
+        <a href="{{ route('posts.show', $post) }}" style="flex-shrink:0;">
+            <img src="{{ Storage::url($post->cover_image) }}"
+                 style="width:180px; height:140px; object-fit:cover; display:block;"
+                 alt="{{ $post->title }}">
         </a>
-        <button class="post-more">...</button>
-    </div>
-
-    {{-- 사진 --}}
-    <div class="post-image">
-        @if($diary->photo)
-            <img src="{{ asset('storage/' . $diary->photo) }}" alt="{{ $diary->title }}">
-        @else
-            <div style="font-size:5rem;opacity:0.3;">
-                {{ substr($diary->title, 0, 1) }}
-            </div>
         @endif
-    </div>
 
-    <div class="post-actions">
-        <button class="act-btn" data-id="{{ $diary->id }}" onclick="toggleLike(this)">
-            <span class="heart-icon">♡</span>
-        </button>
-        <button class="act-btn">✉</button>
-        <button class="act-btn">↗</button>
-        <button class="act-btn save-btn">⊡</button>
-    </div>
+        <div style="padding: 18px 20px; flex:1; min-width:0;">
+            {{-- 카테고리 뱃지 --}}
+            @if($post->category)
+            <a href="{{ route('categories.show', $post->category->slug) }}"
+               style="font-size:0.75rem; color:#f4a7b9; font-weight:700; text-decoration:none; letter-spacing:0.3px;">
+                {{ $post->category->name }}
+            </a>
+            @endif
 
-    <div class="post-likes" id="likes-{{ $diary->id }}">
-        좋아요 {{ number_format($diary->likes) }}개
-    </div>
+            {{-- 제목 --}}
+            <h3 style="margin: 5px 0 8px;">
+                <a href="{{ route('posts.show', $post) }}"
+                   style="text-decoration:none; color:#222; font-size:1rem; font-weight:700; line-height:1.4;">
+                    {{ $post->title }}
+                </a>
+            </h3>
 
-    @if($diary->mood)
-        <span class="mood-badge">{{ $diary->mood }}</span>
-    @endif
+            {{-- 본문 미리보기 (HTML 태그 제거 후 120자) --}}
+            <p style="color:#777; font-size:0.875rem; line-height:1.65; margin-bottom:12px;
+                      overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">
+                {{ Str::limit(strip_tags($post->content), 120) }}
+            </p>
 
-    <div class="post-caption">
-        <span class="caption-user">{{ $diary->user->name ?? '알수없음' }}</span>
-        {{ $diary->content }}
-    </div>
+            {{-- 태그 --}}
+            @if($post->tags->count())
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
+                @foreach($post->tags as $tag)
+                <a href="{{ route('tags.show', $tag->slug) }}"
+                   style="font-size:0.75rem; background:#fdeef2; color:#de8a98;
+                          padding:3px 10px; border-radius:100px; text-decoration:none; font-weight:500;">
+                    #{{ $tag->name }}
+                </a>
+                @endforeach
+            </div>
+            @endif
 
-    <div class="post-date">
-        {{ $diary->diary_date->format('Y년 m월 d일') }}
+            {{-- 작성자 + 날짜 + 조회수 --}}
+            <div style="font-size:0.78rem; color:#aaa; display:flex; gap:10px; align-items:center;">
+                <span>{{ $post->user->name }}</span>
+                <span>·</span>
+                <span>{{ $post->created_at->format('Y.m.d') }}</span>
+                <span>·</span>
+                <span>조회 {{ number_format($post->views) }}</span>
+            </div>
+        </div>
+    </article>
+    @empty
+    <div style="text-align:center; padding:60px 0; color:#bbb;">
+        <p style="font-size:1rem;">아직 작성된 글이 없습니다.</p>
+        @auth
+        <a href="{{ route('posts.create') }}"
+           style="display:inline-block; margin-top:16px; background:#f4a7b9; color:#fff;
+                  padding:10px 24px; border-radius:20px; text-decoration:none; font-weight:600; font-size:0.9rem;">
+            첫 글 작성하기
+        </a>
+        @endauth
     </div>
-
-    <div class="comment-row">
-        <span style="font-size:1.2rem">:)</span>
-        <input class="comment-input" type="text" placeholder="댓글 달기..."
-            oninput="this.nextElementSibling.className='comment-submit '+(this.value?'on':'')">
-        <button class="comment-submit">게시</button>
-    </div>
+    @endforelse
 </div>
-@empty
-<div style="text-align:center;padding:60px 20px;background:white;border:1px solid #DBDBDB;border-radius:12px;">
-    <p style="font-size:1rem;font-weight:600;margin-bottom:8px;">아직 게시물이 없습니다</p>
-    <p style="color:#8E8E8E;font-size:0.875rem;margin-bottom:20px;">첫 번째 일기를 작성해보세요.</p>
-    <a href="{{ route('diary.create') }}"
-       style="background:#0095F6;color:white;padding:8px 20px;border-radius:8px;text-decoration:none;font-size:0.875rem;font-weight:600;">
-        일기 작성하기
-    </a>
-</div>
-@endforelse
 
 {{-- 페이지네이션 --}}
-@if($diaries->hasPages())
-<div style="margin-top:20px;">
-    {{ $diaries->links() }}
+@if($posts->hasPages())
+<div style="margin-top: 32px; display:flex; justify-content:center;">
+    {{ $posts->links() }}
 </div>
 @endif
-
 @endsection
 
-@section('rightbar')
-@auth
-<div class="profile-mini">
-    <div class="profile-mini-left">
-        <div class="avatar-lg">
-            <div class="avatar-lg-inner" style="font-size:1rem;font-weight:600;">
-                {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
-            </div>
-        </div>
-        <div>
-            <div class="pm-name">{{ auth()->user()->name }}</div>
-            <div class="pm-sub">{{ auth()->user()->email }}</div>
-        </div>
-    </div>
+@section('sidebar')
+<div class="sidebar-box">
+    <h3>안내</h3>
+    <p style="font-size:0.85rem; color:#777; line-height:1.7;">
+        누구나 글을 쓸 수 있는 공간입니다.<br>
+        @guest
+        로그인 후 글쓰기를 시작해보세요.
+        @endguest
+    </p>
 </div>
-@endauth
-
-<div class="section-label">
-    <span>최근 작성자</span>
-</div>
-
-@foreach($recentUsers as $user)
-<div class="suggest-item">
-    <div class="suggest-left">
-        <div class="sug-avatar" style="font-size:0.8rem;font-weight:600;">
-            {{ strtoupper(substr($user->name, 0, 2)) }}
-        </div>
-        <div>
-            <div class="sug-name">{{ $user->name }}</div>
-            <div class="sug-sub">일기 {{ $user->diaries_count }}개</div>
-        </div>
-    </div>
-</div>
-@endforeach
-
-<div class="rf">
-    소개 · 도움말 · 개인정보처리방침<br>
-    © 2026 묘생일기
-</div>
-@endsection
-
-@section('scripts')
-<script>
-function toggleLike(btn) {
-    const id = btn.dataset.id;
-    fetch(`/diary/${id}/like`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json',
-        }
-    })
-    .then(r => r.json())
-    .then(data => {
-        const heart = btn.querySelector('.heart-icon');
-        heart.textContent = heart.textContent === '♡' ? '♥' : '♡';
-        document.getElementById(`likes-${id}`).textContent = `좋아요 ${data.likes.toLocaleString()}개`;
-    });
-}
-</script>
 @endsection

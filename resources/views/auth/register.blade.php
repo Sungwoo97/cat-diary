@@ -3,92 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>묘생일기 · 가입하기</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <title>Cat-Log · 가입하기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --border:#DBDBDB; --text:#262626; --muted:#8E8E8E; --blue:#0095F6; --bg:#FAFAFA; }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Noto Sans KR',-apple-system,sans-serif; background:var(--bg); color:var(--text); font-size:14px; display:flex; flex-direction:column; min-height:100vh; align-items:center; justify-content:center; padding:20px; }
-
-        .auth-box {
-            background:white; border:1px solid var(--border);
-            border-radius:2px; padding:40px 40px 28px;
-            width:100%; max-width:350px; margin-bottom:10px;
+        :root {
+            --accent:    #f4a7b9;
+            --accent-dk: #de8a98;
+            --accent-lt: #fdeef2;
+            --bg:        #f7f7f7;
+            --surface:   #ffffff;
+            --border:    #e8e8e8;
+            --text:      #333333;
+            --muted:     #999999;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 14px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .auth-wrap {
+            width: 100%;
+            max-width: 380px;
         }
         .auth-logo {
-            font-family:'Dancing Script',cursive; font-size:2.5rem; font-weight:700;
-            text-align:center; display:block; margin-bottom:8px;
-            background:linear-gradient(45deg,#E1306C,#F77737,#FCAF45);
-            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+            display: block;
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            margin-bottom: 28px;
         }
-        .auth-tagline { text-align:center; font-size:1rem; font-weight:600; color:var(--muted); margin-bottom:20px; line-height:1.5; }
+        .auth-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 36px 32px;
+            margin-bottom: 12px;
+        }
+        .auth-box h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .error-box {
+            background: #fff0f0;
+            color: #c0392b;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            margin-bottom: 16px;
+            border: 1px solid #fcd5d5;
+        }
         .form-field {
-            width:100%; padding:10px 12px;
-            background:#FAFAFA; border:1px solid var(--border);
-            border-radius:4px; font-family:inherit; font-size:0.78rem;
-            outline:none; margin-bottom:8px; color:var(--text); transition:border-color 0.15s;
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            outline: none;
+            margin-bottom: 10px;
+            color: var(--text);
+            transition: border-color 0.15s;
         }
-        .form-field:focus { border-color:#A8A8A8; background:white; }
-        .form-field::placeholder { color:var(--muted); }
-        .btn-signup {
-            width:100%; padding:8px;
-            background:var(--blue); color:white;
-            border:none; border-radius:8px;
-            font-size:0.875rem; font-weight:600;
-            cursor:pointer; margin-top:4px;
+        .form-field:focus {
+            border-color: var(--accent);
+            background: var(--surface);
         }
-        .terms { font-size:0.72rem; color:var(--muted); text-align:center; margin-top:16px; line-height:1.6; }
-        .terms a { color:var(--text); font-weight:600; text-decoration:none; }
-        .or-divider { display:flex; align-items:center; gap:14px; margin:14px 0; color:var(--muted); font-size:0.8rem; font-weight:600; }
-        .or-divider::before, .or-divider::after { content:''; flex:1; height:1px; background:var(--border); }
-        .btn-kakao {
-            width:100%; padding:9px;
-            background:#FEE500; color:#191919;
-            border:none; border-radius:8px;
-            font-size:0.82rem; font-weight:600;
-            cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+        .form-field::placeholder { color: var(--muted); }
+        .btn-submit {
+            width: 100%;
+            padding: 10px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+            transition: background 0.15s;
         }
-        .auth-box2 { background:white; border:1px solid var(--border); border-radius:2px; padding:20px 40px; text-align:center; font-size:0.875rem; width:100%; max-width:350px; }
-        .auth-box2 a { color:var(--blue); font-weight:600; text-decoration:none; }
+        .btn-submit:hover { background: var(--accent-dk); }
+        .auth-link-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+        .auth-link-box a {
+            color: var(--accent-dk);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .auth-link-box a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
-<div class="auth-box">
-    <a href="{{ url('/') }}" class="auth-logo">묘생일기</a>
-    <p class="auth-tagline">친구들의 냥이 사진과<br>일상을 확인해보세요.</p>
+<div class="auth-wrap">
+    <a href="{{ url('/') }}" class="auth-logo">Cat-Log</a>
 
-    @if($errors->any())
-        <div style="background:#ffe0e0; color:#c0392b; padding:10px 12px; border-radius:4px; font-size:0.82rem; margin-bottom:12px;">
-            {{ $errors->first() }}
-        </div>
-    @endif
+    <div class="auth-box">
+        <h2>가입하기</h2>
 
-    <button class="btn-kakao" style="margin-bottom:14px;">
-        <span style="font-size:1.1rem">💛</span> 카카오로 가입하기
-    </button>
+        @if($errors->any())
+            <div class="error-box">{{ $errors->first() }}</div>
+        @endif
 
-    <div class="or-divider">또는</div>
-
-    <form action="{{ url('/register') }}" method="POST">
-        @csrf
-        <input type="email"    name="email"                 class="form-field" placeholder="이메일 주소"   value="{{ old('email') }}"  required>
-        <input type="text"     name="name"                  class="form-field" placeholder="성명"          value="{{ old('name') }}"   required>
-        <input type="text"     name="username"              class="form-field" placeholder="사용자 이름"   value="{{ old('username') }}" required>
-        <input type="password" name="password"              class="form-field" placeholder="비밀번호"                                  required>
-        <input type="password" name="password_confirmation" class="form-field" placeholder="비밀번호 확인"                             required>
-        <button type="submit" class="btn-signup">가입하기</button>
-    </form>
-
-    <div class="terms">
-        가입하면 묘생일기의 <a href="#">약관</a>,
-        <a href="#">데이터 정책</a> 및 <a href="#">쿠키 정책</a>에
-        동의하게 됩니다.
+        <form action="{{ url('/register') }}" method="POST">
+            @csrf
+            <input type="text"     name="name"                  class="form-field" placeholder="이름"          value="{{ old('name') }}"  required>
+            <input type="email"    name="email"                 class="form-field" placeholder="이메일 주소"   value="{{ old('email') }}" required>
+            <input type="password" name="password"              class="form-field" placeholder="비밀번호 (8자 이상)"                       required>
+            <input type="password" name="password_confirmation" class="form-field" placeholder="비밀번호 확인"                             required>
+            <button type="submit" class="btn-submit">가입하기</button>
+        </form>
     </div>
-</div>
 
-<div class="auth-box2">
-    계정이 있으신가요? <a href="{{ url('/login') }}">로그인</a>
+    <div class="auth-link-box">
+        계정이 있으신가요? <a href="{{ url('/login') }}">로그인</a>
+    </div>
 </div>
 
 </body>
