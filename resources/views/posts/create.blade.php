@@ -62,7 +62,8 @@
 
 <div class="form-card">
     {{-- 수정이면 PUT, 작성이면 POST --}}
-    <form action="{{ isset($post) ? route('posts.update', $post) : route('posts.store') }}"
+    <form id="post-form"
+          action="{{ isset($post) ? route('posts.update', $post) : route('posts.store') }}"
           method="POST"
           enctype="multipart/form-data">
         @csrf
@@ -159,8 +160,7 @@
         }
     });
 
-    // 폼 제출 직전에 Quill의 HTML 내용을 hidden input에 담음
-    document.querySelector('form').addEventListener('submit', function () {
+    document.getElementById('post-form').addEventListener('submit', function () {
         document.getElementById('content-input').value = quill.root.innerHTML;
     });
 </script>

@@ -3,7 +3,15 @@
 
 @section('content')
 <div style="margin-bottom: 24px;">
+    @if($q)
+    <h2 style="font-size: 1.25rem; font-weight: 700; color: #333;">
+        '<span style="color:#f4a7b9;">{{ $q }}</span>' 검색 결과
+        <span style="font-size:0.9rem; font-weight:400; color:#999; margin-left:6px;">{{ number_format($posts->total()) }}건</span>
+    </h2>
+    <a href="{{ route('home') }}" style="font-size:0.82rem; color:#aaa; text-decoration:none;">← 전체 글 보기</a>
+    @else
     <h2 style="font-size: 1.25rem; font-weight: 700; color: #333;">전체 글</h2>
+    @endif
 </div>
 
 {{-- 글 카드 목록 --}}

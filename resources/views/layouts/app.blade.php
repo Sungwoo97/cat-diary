@@ -155,6 +155,15 @@
 {{-- 상단 네비게이션 --}}
 <nav class="navbar">
     <a href="{{ route('home') }}" class="navbar-logo">Cat-Log</a>
+    <form action="{{ route('home') }}" method="GET" style="display:flex; align-items:center;">
+        <input type="text" name="q" value="{{ request('q') }}"
+               placeholder="제목 또는 태그 검색"
+               style="width:200px; padding:6px 14px; border:1px solid #e8e8e8; border-radius:20px;
+                      font-size:0.82rem; font-family:inherit; outline:none; background:#f7f7f7;
+                      transition:border-color 0.15s, width 0.2s;"
+               onfocus="this.style.borderColor='#f4a7b9'; this.style.background='#fff'; this.style.width='240px';"
+               onblur="this.style.borderColor='#e8e8e8'; this.style.background='#f7f7f7'; this.style.width='200px';">
+    </form>
     <div class="navbar-menu">
         @auth
             <a href="{{ route('posts.my') }}">내 블로그</a>

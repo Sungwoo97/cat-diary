@@ -14,11 +14,32 @@ use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
-    // ── 공개 피드 (메인 페이지) ────────────────────────────────
     public function index()
     {
-        $page    = request()->get('page', 1);
-        $version = Cache::get('home_feed_version', 1);
+        $q = trim(request()->get('q', ''));
+
+        if ($q !== '') {
+            $posts = Post::with(['user', 'category', 'tags'])
+                ->select([
+                    'id', 'user_id', 'category_id', 'title',
+                    'cover_image', 'visibility', 'views',
+                    'created_at', 'updated_at',
+                    DB::raw('LEFT(content, 300) as content'),
+                ])
+                ->where('visibility', 'public')
+                ->where(function ($query) use ($q) {
+                    $query->where('title', 'like', "%{$q}%")
+                          ->orWhereHas('tags', fn ($t) => $t->where('name', 'like', "%{$q}%"));
+                })
+                ->latest()
+                ->paginate(12)
+                ->withQueryString();
+
+            return view('home', compact('posts', 'q'));
+        }
+
+        $page     = request()->get('page', 1);
+        $version  = Cache::get('home_feed_version', 1);
         $cacheKey = "home.feed.v{$version}.page.{$page}";
 
         $posts = Cache::remember($cacheKey, 3600, function () {
@@ -34,7 +55,8 @@ class PostController extends Controller
                 ->paginate(12);
         });
 
-        return view('home', compact('posts'));
+        $q = '';
+        return view('home', compact('posts', 'q'));
     }
 
     // ── 글 작성 폼 ─────────────────────────────────────────────
